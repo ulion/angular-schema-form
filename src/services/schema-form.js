@@ -149,6 +149,17 @@ angular.module('schemaForm').provider('schemaForm',
         if (f.titleMap.length < schema['enum'].length)
           f.allowNull = true;
       }
+      else {
+        // make sure titleMap is list and detect the null value within the titleMap
+        f.titleMap = canonicalTitleMap(f.titleMap).filter(function(item) {
+          if (item.value === null) {
+            // so we have null value option, setup the label and make it always selectable.
+            f.allowNull = item.name;
+            return false;
+          }
+          return true;
+        });
+      }
       options.lookup[sfPathProvider.stringify(options.path)] = f;
       return f;
     }
