@@ -144,7 +144,10 @@ angular.module('schemaForm').provider('schemaForm',
       f.key  = options.path;
       f.type = 'select';
       if (!f.titleMap) {
-        f.titleMap = enumToTitleMap(schema['enum']);
+        // skip null value, angular ngOptions has special empty option with value null.
+        f.titleMap = enumToTitleMap(schema['enum'].filter(function(v) { return v !== null; }));
+        if (f.titleMap.length < schema['enum'].length)
+          f.allowNull = true;
       }
       options.lookup[sfPathProvider.stringify(options.path)] = f;
       return f;
