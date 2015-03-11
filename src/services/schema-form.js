@@ -144,21 +144,7 @@ angular.module('schemaForm').provider('schemaForm',
       f.key  = options.path;
       f.type = 'select';
       if (!f.titleMap) {
-        // skip null value, angular ngOptions has special empty option with value null.
-        f.titleMap = enumToTitleMap(schema['enum'].filter(function(v) { return v !== null; }));
-        if (f.titleMap.length < schema['enum'].length)
-          f.allowNull = true;
-      }
-      else {
-        // make sure titleMap is list and detect the null value within the titleMap
-        f.titleMap = canonicalTitleMap(f.titleMap).filter(function(item) {
-          if (item.value === null) {
-            // so we have null value option, setup the label and make it always selectable.
-            f.allowNull = item.name;
-            return false;
-          }
-          return true;
-        });
+        f.titleMap = enumToTitleMap(schema['enum']);
       }
       options.lookup[sfPathProvider.stringify(options.path)] = f;
       return f;
@@ -375,6 +361,21 @@ angular.module('schemaForm').provider('schemaForm',
               }
             });
           }
+        }
+
+        if (obj.type === 'select' && obj.titleMap && obj.allowNull !== false) {
+          // when allowNull === false, we leave titleMap as it is.
+          // else we filter out the null value and setup allowNull to the label
+          // so the select template will behaviour different according to it.
+          obj.titleMap = obj.titleMap.filter(function(item) {
+            if (item.value === null) {
+              // so we have null value option, setup the label and make it always selectable.
+              if (obj.allowNull === undefined)
+                obj.allowNull = item.name === null ? '' : item.name;
+              return false;
+            }
+            return true;
+          });
         }
 
         // Are we inheriting readonly?
