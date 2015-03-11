@@ -363,15 +363,15 @@ angular.module('schemaForm').provider('schemaForm',
           }
         }
 
-        if (obj.type === 'select' && obj.titleMap && obj.allowNull !== false) {
+        if (obj.type === 'select' && obj.titleMap && obj.allowAutoNullOption !== false) {
           // when allowNull === false, we leave titleMap as it is.
           // else we filter out the null value and setup allowNull to the label
           // so the select template will behaviour different according to it.
           obj.titleMap = obj.titleMap.filter(function(item) {
             if (item.value === null) {
               // so we have null value option, setup the label and make it always selectable.
-              if (obj.allowNull === undefined)
-                obj.allowNull = item.name === null ? '' : item.name;
+              if (obj.allowAutoNullOption === undefined)
+                obj.allowAutoNullOption = item.name === null ? '' : item.name;
               return false;
             }
             return true;
